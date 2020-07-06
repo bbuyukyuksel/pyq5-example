@@ -1,12 +1,12 @@
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtWidgets import QApplication, QDialog, QMainWindow
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QGroupBox
-from PyQt5.QtWidgets import QCheckBox, QLabel, QPushButton
+from PyQt5.QtWidgets import QCheckBox, QLabel, QPushButton, QButtonGroup
 import sys
 
 import window_checkbox
 import window_radiobutton
-
+import random
 
 class Window(QMainWindow):
     def __init__(self):
@@ -28,6 +28,8 @@ class Window(QMainWindow):
         self.UI()
         self.show()
 
+    def keyPressEvent(self, e):
+        pass
     def UI(self):
         mainVBoxLayout = QVBoxLayout()
         # region group
@@ -45,10 +47,10 @@ class Window(QMainWindow):
         self.button2.setObjectName("button2")
         self.button2.clicked.connect(self.onClickedButton)
         hBoxLayout.addWidget(self.button2)
-
         group.setLayout(hBoxLayout)
         mainVBoxLayout.addWidget(group)
         # endregion group 
+
         # region label
         self.lb_select = QLabel("...")
         self.lb_select.setFont(QtGui.QFont('Sanserif', 11))
@@ -56,9 +58,27 @@ class Window(QMainWindow):
         mainVBoxLayout.addWidget(self.lb_select)
         # endregion
 
+        # region buttongroup
+        hBox = QHBoxLayout()
+        self.buttongroup = QButtonGroup()
+        self.buttongroup.buttonClicked[int].connect(self.onGroupButtonClicked)
+        
+        LABELS = ["Connect", "Disconnect", "Open", "Close"]
+        for ID, LABEL in enumerate(LABELS):
+            button = QPushButton(LABEL)
+            self.buttongroup.addButton(button, ID)
+            hBox.addWidget(button)
+            button.setFont(QtGui.QFont("Sanserif", 13))
+            button.setStyleSheet('color:rgb({},{},{})'.format(random.randint(0,100),random.randint(0,100),random.randint(0,100)))
+        mainVBoxLayout.addLayout(hBox)
+        # endregion
+        
         mainWidget = QWidget()
         self.setCentralWidget(mainWidget)
         mainWidget.setLayout(mainVBoxLayout)
+    def onGroupButtonClicked(self, id):
+        self.lb_select.setText(f'ButtonGroup:{self.buttongroup.buttons()[id].text()}')
+
 
     def onClickedButton(self):
         button = self.sender()
